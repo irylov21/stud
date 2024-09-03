@@ -1,0 +1,82 @@
+<html>
+<head>
+<script language="Javascript">
+function TableYchastki() {
+    let n = ChisloYchastkov.value;
+    div1.style.display = "block";
+
+    for (let i = 1; i <= n; i++) {
+        if (i <= n) {
+            div1.innerHTML += "Площадь повреждённой территории на " + i + " участке: <input type=text id='ploshad" + i + "'><br>";
+        }
+    }
+    div1.innerHTML += "<hr><input type=button value='Поиск аномальных значений' onClick='Calc()' id='Button2'><br>";
+    div1.innerHTML += "Общая площадь повреждённой территории: <input type=text id='SumPloshad'><br>";
+    div1.innerHTML += "Средняя площадь повреждённой территории: <input type=text id='SredPloshad'><br>";
+    div1.innerHTML += "Среднеквадратическое отклонение: <input type=text id='Otklonenie'><br>";
+    div1.innerHTML += "Коэффициент: <input type=text id='koef'><br>";
+}
+
+function Calc() {
+    let n = ChisloYchastkov.value;
+    let k = 2.146; // Коэффициент по умолчанию
+
+    // Определяем значение k в зависимости от количества участков n
+    if (n > 0 && n <= 5) {
+        k = 1.791;
+    } else if (n > 5 && n <= 10) {
+        k = 2.146;
+    } else if (n > 10 && n <= 15) {
+        k = 2.321;
+    } else if (n > 15 && n <= 20) {
+        k = 2.447;
+    }
+    
+    koef.value = k;
+
+    SumPloshad.value = 0;
+    SredPloshad.value = 0;
+    Otklonenie.value = 0;
+
+    // Суммирование
+    for (let i = 1; i <= n; i++) {
+        if (i <= n) {
+            let element1 = "ploshad" + i;
+            SumPloshad.value = +SumPloshad.value + +document.getElementById(element1).value;
+        }
+    }
+
+    SredPloshad.value = SumPloshad.value / n;
+
+    // Рассчитываем отклонение
+    for (let i = 1; i <= n; i++) {
+        if (i <= n) {
+            let element1 = "ploshad" + i;
+            Otklonenie.value = +Otklonenie.value + Math.pow(document.getElementById(element1).value - SredPloshad.value, 2);
+        }
+    }
+
+    Otklonenie.value = Math.sqrt(Otklonenie.value / n);
+
+    // Проверка на аномальные значения и обновление фона
+    for (let i = 1; i <= n; i++) {
+        let element1 = "ploshad" + i;
+        let deviation = (document.getElementById(element1).value - SredPloshad.value) / Otklonenie.value;
+        
+        // Если значение больше или равно коэффициенту k, выделяем красным, иначе возвращаем белый фон
+        if (deviation >= k) {
+            document.getElementById(element1).style.background = 'red';
+        } else {
+            document.getElementById(element1).style.background = ''; // Возвращаем стандартный фон
+        }
+    }
+}
+</script>
+</head>
+<body>
+<b>Количество лесных участков, подверженных болезни</b><br><br>
+<input type=text value="10" id="ChisloYchastkov"><br><br>
+<input type=button value="Далее" onClick="TableYchastki()" id="Button1"><br><hr>
+<div id="div1" style="display:none"></div>
+</body>
+</html>
